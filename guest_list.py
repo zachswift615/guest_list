@@ -1,7 +1,7 @@
 import sqlite3
 
 
-conn = sqlite3.connect('rsvp.db')
+conn = sqlite3.connect('guest_list.db')
 cursor = conn.cursor()
 TABLEDEF = '''CREATE TABLE if not exists guests
               (firstName text, lastName text, RSVP integer)'''

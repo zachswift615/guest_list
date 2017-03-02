@@ -1,11 +1,11 @@
-from guest_list import insert_guest, delete_guest, get_guest, get_guest_list
+from guest_list import (insert_guest, delete_guest, get_guest, get_guest_list,
+                        rsvp)
 import pytest
 
 
 def test_insert_guest_saves_guest(clean_guest_list, first_name,
                                   last_name, guest_list_from_db,
                                   expected_db_row):
-
     # Call the function being tested
     insert_guest(first_name, last_name)
 
@@ -43,7 +43,8 @@ def test_delete_guest_deletes(clean_guest_list, insert_one_guest,
     assert len(guest_list) == 0
 
 
-def test_get_guest_raises_if_not_found(clean_guest_list, first_name, last_name):
+def test_get_guest_raises_if_not_found(clean_guest_list, first_name,
+                                       last_name):
     with pytest.raises(ValueError):
         get_guest(first_name, last_name)
 
@@ -76,3 +77,25 @@ def test_get_guest_list_returns_guest_list(clean_guest_list, insert_one_guest,
     assert len(guest_list) == 2
     assert all(guest == expected_db_row for guest in guest_list)
 
+
+def test_rsvp_raises_if_guest_not_found(clean_guest_list, first_name,
+                                        last_name):
+    # Call rsvp without inserting any guests
+    with pytest.raises(ValueError):
+        rsvp(first_name, last_name, True)
+
+
+def test_rsvp_changes_answer_field(clean_guest_list, first_name, last_name,
+                                   insert_one_guest, guest_list_from_db):
+    # Insert a guest so we have someone to submit an RSVP for
+    insert_one_guest()
+
+    # Submit an RSVP and assert the status is True
+    rsvp(first_name, last_name, True)
+    guest_list = guest_list_from_db()
+    assert guest_list[0] == (first_name, last_name, True)
+
+    # Change the RSVP status and assert it is updated accordingly
+    rsvp(first_name, last_name, False)
+    guest_list = guest_list_from_db()
+    assert guest_list[0] == (first_name, last_name, False)

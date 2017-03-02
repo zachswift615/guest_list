@@ -19,7 +19,7 @@ def expected_db_row(first_name, last_name):
 
 @pytest.fixture
 def conn():
-    return sqlite3.connect('rsvp.db')
+    return sqlite3.connect('guest_list.db')
 
 
 @pytest.fixture
