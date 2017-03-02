@@ -13,6 +13,11 @@ def last_name():
 
 
 @pytest.fixture
+def expected_db_row(first_name, last_name):
+    return first_name, last_name, None
+
+
+@pytest.fixture
 def conn():
     return sqlite3.connect('rsvp.db')
 
@@ -45,3 +50,12 @@ def clean_guest_list(conn, cursor):
 
     yield
     clean()
+
+
+@pytest.fixture
+def insert_one_guest(first_name, last_name, conn, cursor):
+    def inner():
+        with conn:
+            cursor.execute('''INSERT INTO guests VALUES
+                           (?, ?, null)''', (first_name, last_name,))
+    return inner
