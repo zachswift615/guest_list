@@ -3,17 +3,16 @@ import sqlite3
 
 conn = sqlite3.connect('guest_list.db')
 cursor = conn.cursor()
-TABLEDEF = '''CREATE TABLE if not exists guests
-              (firstName text, lastName text, RSVP integer)'''
-with conn:
-    cursor.execute(TABLEDEF)
 
 
 def insert_guest(first_name, last_name):
-    query = "INSERT INTO guests VALUES (?, ?, null)"
+    query = """INSERT INTO guests
+                   VALUES (null, ?, ?, null)"""
 
     with conn:
-        cursor.execute(query, (first_name, last_name,))
+        result = cursor.execute(query, (first_name,
+                                        last_name,))
+        return result.lastrowid
 
 
 def delete_guest(first_name, last_name):
